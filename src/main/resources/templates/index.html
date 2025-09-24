@@ -1,22 +1,71 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
+    <meta charset="UTF-8">
     <title>Hackathon MVP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- 모바일 최적화 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            max-width: 420px;          /* 스마트폰 화면 폭 */
+            margin: 0 auto;            /* 가운데 정렬 */
+            border: 1px solid #ddd;    /* 앱 화면 테두리 느낌 */
+            min-height: 100vh;         /* 화면 꽉 채우기 */
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: #0d6efd;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        main {
+            flex: 1;                   /* 남은 영역 채우기 */
+            padding: 1rem;
+            overflow-y: auto;          /* 스크롤 */
+        }
+        form textarea {
+            resize: none;
+            height: 80px;
+        }
+        footer {
+            background: white;
+            border-top: 1px solid #ddd;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
 </head>
-<body class="container mt-5">
-<h1 class="mb-4">문제 리스트</h1>
+<body>
+<header>
+    🚀 Hackathon MVP
+</header>
 
-<form action="/add" method="post" class="mb-3">
-    <input type="text" name="title" placeholder="제목" required class="form-control mb-2">
-    <textarea name="description" placeholder="설명" class="form-control mb-2"></textarea>
-    <button class="btn btn-primary">추가</button>
-</form>
+<main>
+    <h2 class="h5 mb-3">문제 등록</h2>
+    <form action="/add" method="post" class="mb-4">
+        <input type="text" name="title" placeholder="제목" required class="form-control mb-2">
+        <textarea name="description" placeholder="설명" class="form-control mb-2"></textarea>
+        <button class="btn btn-primary w-100">추가</button>
+    </form>
 
-<ul class="list-group">
-    <li th:each="p : ${problems}" class="list-group-item">
-        <strong th:text="${p.title}"></strong> - <span th:text="${p.description}"></span>
-    </li>
-</ul>
+    <h2 class="h5 mb-3">문제 리스트</h2>
+    <ul class="list-group">
+        <li th:each="p : ${problems}" class="list-group-item d-flex flex-column">
+            <strong th:text="${p.title}" class="mb-1"></strong>
+            <span th:text="${p.description}" class="text-muted small"></span>
+        </li>
+    </ul>
+</main>
+
+<footer>
+    © Hackathon Team · 2025
+</footer>
 </body>
 </html>
