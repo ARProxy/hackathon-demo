@@ -15,18 +15,21 @@ public class TestController {
 
     private final TestService testService;
 
+    /**
+     * 로그인 페이지 (기본 진입점)
+     */
     @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("problems", testService.findAll());
-        return "index";
+    public String loginPage() {
+        return "login"; // login.html
     }
 
-    @PostMapping("/add")
-    public String add(
-            @RequestParam String title,
-            @RequestParam String description
-    ) {
-        testService.save(title, description);
-        return "redirect:/";
+    /**
+     * 카카오 OAuth Redirect → code 값 받음
+     */
+    @GetMapping("/auth/kakao/callback")
+    public String kakaoCallback(@RequestParam String code, Model model) {
+        // code를 callback.html에 넘겨서 JS fetch로 백엔드 API 호출
+        model.addAttribute("code", code);
+        return "callback"; // callback.html (스피너 화면)
     }
 }

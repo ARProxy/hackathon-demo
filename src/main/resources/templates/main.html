@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>메인 페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background:#fff; font-family: 'Noto Sans KR', sans-serif; }
+        header {
+            display:flex; justify-content:space-between; align-items:center;
+            padding: 1rem; border-bottom:1px solid #ddd;
+        }
+        .logo { font-size:1.2rem; font-weight:bold; color:#0d6efd; }
+        .user-info { display:flex; align-items:center; }
+        .user-info img {
+            width:32px; height:32px; border-radius:50%; margin-right:8px;
+        }
+        .main-content {
+            padding: 2rem 1rem;
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <!-- 왼쪽 로고 -->
+    <div class="logo">Cellonine</div>
+
+    <!-- 오른쪽 사용자 프로필 -->
+    <div class="user-info">
+        <img th:src="${user.profile_image_url}" alt="프로필">
+        <span th:text="${user.nickname}">사용자</span>
+    </div>
+</header>
+
+<main class="main-content">
+    <h2>5000만 대한민국 국민의 일상을 응원합니다.</h2>
+    <p>카카오 로그인 성공 🎉</p>
+</main>
+</body>
+</html>
