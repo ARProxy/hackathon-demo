@@ -17,7 +17,13 @@ java {
 repositories {
 	mavenCentral()
 }
-
+sourceSets {
+	main {
+		resources {
+			srcDirs = ["src/main/resources"]
+		}
+	}
+}
 dependencies {
 	// Spring Boot 기본
 	implementation 'org.springframework.boot:spring-boot-starter'

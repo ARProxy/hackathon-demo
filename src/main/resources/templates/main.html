@@ -14,6 +14,9 @@
             display: flex;
             flex-direction: column;
             font-family: 'Noto Sans KR', sans-serif;
+
+            border-left: 1px solid #fff;
+            border-right: 1px solid #fff;
         }
         header {
             display:flex; justify-content:space-between; align-items:center;
@@ -201,16 +204,16 @@
                     { title: "긴급재난지원금",           agency: "행정안전부",   description: "코로나19 위기 극복을 위한 전 국민 대상 지원금입니다." },
                     { title: "농작물재해보험", agency: "행정안전부", description: "농작물재해보험은 자연재해(태풍, 가뭄, 냉해 등)로 인한 피해 보상금을 지급받는 공적 보험제도." },
                     { title: "산불재난 지원금",        agency: "행정안전부",   description: "일상 회복을 보조하기 위한 정부 및 지방자치단체의 긴급 생활보조." },
-                    { title: "풍수해·지진재해보험",      agency: "행정안전부",   description: "국민은 저렴한 보험료로 예기치 못한 풍수해·지진재해." },
+                    { title: "풍수해·지진재해보험",      agency: "행정안전부",   description: "국민은 저렴한 보험료로 예기치 못한 풍수해·지진재해 지원금." },
                     { title: "지역 소상공인 회복지원금",     agency: "지자체",      description: "지역 경기 침체 완화를 위한 소상공인 맞춤형 지원금." },
                     { title: "저소득층 긴급복지지원",       agency: "보건복지부",   description: "위기상황 저소득층 가구에 생계·의료·주거비 긴급 지원." }
                 ];
 
                 if (address.includes('서울')) {
                     sampleData.unshift({
-                        title: "[서울시] 서울 희망지원금",
-                        agency: "서울특별시청",
-                        description: "서울시민 생활 안정을 돕기 위해 서울시가 별도로 지급하는 지원금입니다."
+                        title: "풍수해·지진재해보험",
+                        agency: "행정안전부",
+                        description: "국민은 저렴한 보험료로 예기치 못한 풍수해·지진재해 지원금."
                     });
                     sampleData = sampleData.slice(0, 6); // 항상 6개 유지
                 }
