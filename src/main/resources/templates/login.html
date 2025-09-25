@@ -30,27 +30,18 @@
             margin-bottom: 2rem;
             line-height: 1.5;
         }
-        /* 카카오 로그인 버튼 */
+        /* 카카오 로그인 버튼 이미지 */
         .kakao-login {
-            background-color: #FEE500;
-            border: none;
-            color: #000;
-            font-weight: bold;
-            width: 100%;
-            max-width: 320px;
-            height: 50px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            text-decoration: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            display: block;
+            width: 80%;
+            max-width: 420px;
+            border-radius: 12px;
+            overflow: hidden; /* 라운드 모서리 안에 이미지 잘리도록 */
         }
         .kakao-login img {
-            width: 20px;
-            height: 20px;
-            margin-right: 8px;
+            width: 100%;
+            height: auto;
+            display: block;
         }
         .alt-login {
             margin-top: 1.5rem;
@@ -75,10 +66,9 @@
 </div>
 
 <!-- 카카오 로그인 버튼 -->
-<a href="https://kauth.kakao.com/oauth/authorize?client_id=b8da5111ad5fb989de71ae153b1bb0c9&redirect_uri=http://15.164.103.49:8081/auth/kakao/callback&response_type=code"
+<a href="https://kauth.kakao.com/oauth/authorize?client_id=b8da5111ad5fb989de71ae153b1bb0c9&redirect_uri=http://localhost:8081/auth/kakao/callback&response_type=code"
    class="kakao-login">
-    <img th:src="@{/images/kakao_login.png}" alt="카카오 로고">
-    카카오 로그인
+    <img th:src="@{/images/kakao.png}" alt="카카오 로그인">
 </a>
 
 <div class="alt-login">

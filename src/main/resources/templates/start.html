@@ -15,6 +15,8 @@
             display: flex;
             flex-direction: column;
             padding: 1.5rem 1rem;
+            position: relative;
+            overflow-x: hidden;
         }
         header {
             margin-bottom: 2rem;
@@ -46,7 +48,7 @@
             stroke: #0d6efd;
             stroke-width: 14;
             stroke-linecap: round;
-            stroke-dasharray: 565; /* 원 둘레값 (2πr, r=90) */
+            stroke-dasharray: 565;
             stroke-dashoffset: 565;
         }
         .progress-text {
@@ -64,7 +66,7 @@
         .progress-text .percent {
             font-size: 1.1rem;
             font-weight: 500;
-            color: rgba(13,110,253,0.6); /* 연하게 */
+            color: rgba(13,110,253,0.6);
             margin-left: 0.2rem;
         }
 
@@ -89,34 +91,12 @@
             transform: translateY(-20px);
             transition: all 0.5s ease;
         }
-        .task.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .task .icon {
-            font-size: 1.5rem;
-            margin-right: 1rem;
-        }
-        .task .content {
-            flex: 1;
-        }
-        .task h4 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        .task p {
-            margin: 0.2rem 0 0;
-            font-size: 0.85rem;
-            color: #bbb;
-        }
-        .status {
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .task.show { opacity: 1; transform: translateY(0); }
+        .task .icon { font-size: 1.5rem; margin-right: 1rem; }
+        .task .content { flex: 1; }
+        .task h4 { margin: 0; font-size: 1rem; font-weight: 600; }
+        .task p { margin: 0.2rem 0 0; font-size: 0.85rem; color: #bbb; }
+        .status { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
         .spinner {
             border: 3px solid rgba(255,255,255,0.1);
             border-top: 3px solid #0d6efd;
@@ -125,13 +105,45 @@
             height: 20px;
             animation: spin 1s linear infinite;
         }
-        .check {
-            color: #0d6efd;
-            font-size: 1.2rem;
+        .check { color: #0d6efd; font-size: 1.2rem; }
+        @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
+
+        /* 완료 오버레이 */
+        .overlay {
+            position: fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background: rgba(0,0,0,0.85);
+            display:flex;
+            flex-direction: column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg);}
-            100% { transform: rotate(360deg);}
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .overlay h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .overlay p {
+            font-size: 1rem;
+            color: #bbb;
+        }
+        /* 폭죽 캔버스 */
+        #fireworks {
+            position: fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            pointer-events: none;
+            z-index: 10000;
         }
     </style>
 </head>
@@ -157,6 +169,14 @@
 
 <div id="task-list"></div>
 
+<!-- 완료 오버레이 -->
+<div class="overlay" id="overlay">
+    <h2>🎉 모든 신청이 완료되었습니다!</h2>
+    <p>지원금은 <b>5600만원 ~ 8000만원</b> 사이로 예상됩니다.</p>
+</div>
+
+<canvas id="fireworks"></canvas>
+
 <script>
     const tasks = [
         { icon: "📄", title: "건물 등기부 등본, 건축물관", desc: "서류를 불러오고 있어요" },
@@ -170,7 +190,7 @@
     const taskList = document.getElementById("task-list");
     const numberEl = document.getElementById("progress-number");
     const circle = document.getElementById("circle");
-    const circumference = 2 * Math.PI * 80; // r=80
+    const circumference = 2 * Math.PI * 80;
 
     let progress = 0;
     let completedTasks = 0;
@@ -192,7 +212,10 @@
     }
 
     function showTasksSequentially(index = 0) {
-        if (index >= tasks.length) return;
+        if (index >= tasks.length) {
+            setTimeout(showOverlay, 1000);
+            return;
+        }
 
         const t = tasks[index];
         const task = document.createElement("div");
@@ -216,6 +239,60 @@
             animateProgress(newTarget);
             showTasksSequentially(index + 1);
         }, 3000);
+    }
+
+    // 완료 오버레이 + 폭죽
+    function showOverlay() {
+        document.getElementById("overlay").classList.add("show");
+        launchFireworks();
+    }
+
+    // 폭죽 효과
+    function launchFireworks() {
+        const canvas = document.getElementById("fireworks");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function createFirework(x, y) {
+            for (let i = 0; i < 50; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    angle: random(0, Math.PI * 2),
+                    speed: random(2, 6),
+                    radius: random(2, 4),
+                    life: 100
+                });
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.x += Math.cos(p.angle) * p.speed;
+                p.y += Math.sin(p.angle) * p.speed;
+                p.life--;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${random(0,360)}, 100%, 50%, ${p.life/100})`;
+                ctx.fill();
+                if (p.life <= 0) particles.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
+        }
+
+        setInterval(() => {
+            createFirework(random(100, canvas.width-100), random(100, canvas.height-100));
+        }, 600);
+
+        animate();
     }
 
     showTasksSequentially();

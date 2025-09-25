@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB-URL:jdbc:mariadb://localhost:3306/demo?useSSL=false&allowPublicKeyRetrieval=true}
+    url: ${DB-URL:jdbc:mariadb://localhost:3300/demo?useSSL=false&allowPublicKeyRetrieval=true}
     username: ${DB-NAME:root}
     password: ${DB-PASSWORD:dongcci}
     driver-class-name: org.mariadb.jdbc.Driver
@@ -23,8 +23,8 @@ spring:
 
   data:
     redis:
-#      port: 6380
-      port: 6379
+      port: 6380
+#      port: 6379
       host: localhost
       password:
 
