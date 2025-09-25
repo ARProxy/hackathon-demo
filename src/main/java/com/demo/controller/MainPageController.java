@@ -25,6 +25,15 @@ public class MainPageController {
         return "main"; // templates/main.html
     }
 
+    @PostMapping("/start")
+    public String starts(Model model) {
+        // 로그인한 사용자 정보 가져오기 (DB or SecurityContext)
+        User user = mainPageService.getCurrentUser();
+
+        model.addAttribute("user", user);
+        return "start"; // templates/main.html
+    }
+
     @GetMapping("/relief/detail")
     public String reliefDetail(
             @RequestParam String title,
@@ -63,6 +72,16 @@ public class MainPageController {
         model.addAttribute("agency", fund.getAgency());
         model.addAttribute("description", fund.getDescription());
 
+        User user = mainPageService.getCurrentUser();
+        model.addAttribute("user", user);
+
         return "relief-detail.html"; // Thymeleaf template
+    }
+
+    @GetMapping("/apply")
+    public String applyForm(Model model) {
+        User user = mainPageService.getCurrentUser();
+        model.addAttribute("user", user);
+        return "apply"; // 위에서 만든 apply.html
     }
 }

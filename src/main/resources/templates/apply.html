@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>재난지원금 신청</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+        body {
+            background:#121212;
+            color:#fff;
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            display:flex; justify-content:space-between; align-items:center;
+            padding: 1rem;
+            border-bottom:1px solid #1e1e1e;
+            background-color: #121212;
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo { font-size:1.3rem; font-weight:bold; color:#0d6efd; }
+        .user-info { display:flex; align-items:center; }
+        .user-info img {
+            width:32px; height:32px; border-radius:50%; margin-right:8px;
+            border: 1px solid #333;
+        }
+        .user-info span { font-size:0.95rem; font-weight:500; color:#fff; }
+
+        .container {
+            flex:1;
+            padding:1.5rem;
+        }
+        h2 { font-size:1.2rem; margin-bottom:0.5rem; }
+        p.note { font-size:0.8rem; color:#bbb; margin-bottom:1rem; }
+
+        .consent-all {
+            display:flex; align-items:center; gap:0.6rem;
+            margin-bottom:1rem;
+        }
+        .consent-all input { transform:scale(1.2); accent-color:#0d6efd; }
+
+        .consent-item {
+            margin-bottom:0.6rem;
+            display:flex;
+            align-items:center;
+            gap:0.6rem;
+        }
+        .consent-item input { transform:scale(1.1); accent-color:#0d6efd; }
+
+        .btn-primary {
+            margin-top: 2rem;
+            font-size: 1rem;
+            padding: 0.9rem;
+            font-weight: 600;
+            border-radius: 10px;
+            background:#0d6efd;
+            color:#fff;
+            border:none;
+            width:100%;
+            cursor:pointer;
+            opacity:0.5;
+            pointer-events:none;
+        }
+        .btn-primary.enabled { opacity:1; pointer-events:auto; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">Sub One</div>
+    <div class="user-info">
+        <img th:src="${user != null ? user.profile_image_url : '/images/default.png'}" alt="프로필">
+        <span th:text="${user != null ? user.nickname : '사용자'}">사용자</span>
+    </div>
+</header>
+
+<div class="container">
+    <h2>보험금 수령에 필요한 서류 접수</h2>
+    <p class="note">해당되는 것에 선택을 누르세요</p>
+
+    <form th:action="@{/start}" method="post" id="applyForm">
+        <div class="consent-all">
+            <input type="checkbox" id="selectAll">
+            <label for="selectAll">전체 동의</label>
+        </div>
+
+        <div class="consent-item"><input type="checkbox" name="docs" value="주택"> <label>주택</label></div>
+        <div class="consent-item"><input type="checkbox" name="docs" value="온실"> <label>온실</label></div>
+        <div class="consent-item"><input type="checkbox" name="docs" value="상가 또는 공장"> <label>상가 또는 공장</label></div>
+        <div class="consent-item"><input type="checkbox" name="docs" value="공통"> <label>공통</label></div>
+        <div class="consent-item"><input type="checkbox" name="docs" value="보험금 청구서"> <label>보험금 청구서</label></div>
+        <div class="consent-item"><input type="checkbox" name="docs" value="사고증명서"> <label>사고증명서</label></div>
+        <div class="consent-item"><input type="checkbox" name="docs" value="신분증"> <label>신분증</label></div>
+        <div class="consent-item"><input type="checkbox" name="docs" value="피보험자 가족관계등록부 및 주민등록등본"> <label>피보험자 지정대리청구인의 가족관계등록부 및 주민등록 등본</label></div>
+
+        <button type="submit" id="applyBtn" class="btn-primary">원클릭 재난지원금 신청</button>
+    </form>
+</div>
+
+<script>
+    const allCheckbox = document.getElementById("selectAll");
+    const checkboxes = document.querySelectorAll("input[name=docs]");
+    const applyBtn = document.getElementById("applyBtn");
+
+    allCheckbox.addEventListener("change", () => {
+        checkboxes.forEach(cb => cb.checked = allCheckbox.checked);
+        toggleButton();
+    });
+
+    checkboxes.forEach(cb => cb.addEventListener("change", toggleButton));
+
+    function toggleButton(){
+        const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+        if(anyChecked){
+            applyBtn.classList.add("enabled");
+        } else {
+            applyBtn.classList.remove("enabled");
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>재난지원금 진행</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #121212;
+            color: #fff;
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            font-family: 'Noto Sans KR', sans-serif;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 1rem;
+        }
+        header {
+            margin-bottom: 2rem;
+        }
+        header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* 도넛 차트 */
+        .progress-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0 1rem;
+            position: relative;
+        }
+        svg {
+            transform: rotate(-90deg);
+        }
+        .circle-bg {
+            fill: none;
+            stroke: #1e1e1e;
+            stroke-width: 14;
+        }
+        .circle {
+            fill: none;
+            stroke: #0d6efd;
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-dasharray: 565; /* 원 둘레값 (2πr, r=90) */
+            stroke-dashoffset: 565;
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: baseline;
+        }
+        .progress-text .number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0d6efd;
+        }
+        .progress-text .percent {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: rgba(13,110,253,0.6); /* 연하게 */
+            margin-left: 0.2rem;
+        }
+
+        /* 정부 로고 */
+        .gov-icon {
+            margin-top: -15px;
+        }
+        .gov-icon img {
+            width: 60px;
+            opacity: 0.8;
+        }
+
+        /* 리스트 */
+        .task {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.5s ease;
+        }
+        .task.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .task .icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+        .task .content {
+            flex: 1;
+        }
+        .task h4 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .task p {
+            margin: 0.2rem 0 0;
+            font-size: 0.85rem;
+            color: #bbb;
+        }
+        .status {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #0d6efd;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        .check {
+            color: #0d6efd;
+            font-size: 1.2rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2><span th:text="${user.nickname}">사용자</span> 님의<br>재난 지원금 신청서 제출을 시작할게요</h2>
+</header>
+
+<div class="progress-wrapper">
+    <svg width="180" height="180">
+        <circle class="circle-bg" cx="90" cy="90" r="80"></circle>
+        <circle class="circle" id="circle" cx="90" cy="90" r="80"></circle>
+    </svg>
+    <div class="progress-text">
+        <span class="number" id="progress-number">0</span>
+        <span class="percent">%</span>
+    </div>
+    <div class="gov-icon">
+        <img th:src="@{/images/gov.png}" alt="정부 아이콘">
+    </div>
+</div>
+
+<div id="task-list"></div>
+
+<script>
+    const tasks = [
+        { icon: "📄", title: "건물 등기부 등본, 건축물관", desc: "서류를 불러오고 있어요" },
+        { icon: "📑", title: "수급권 서류", desc: "서류를 불러오고 있어요" },
+        { icon: "📝", title: "보험금 청구서", desc: "서류를 불러오고 있어요" },
+        { icon: "📜", title: "사고증명서", desc: "서류를 불러오고 있어요" },
+        { icon: "🪪", title: "신분증", desc: "신분증을 불러오고 있어요" },
+        { icon: "📂", title: "주민등록 등본", desc: "서류를 불러오고 있어요" },
+    ];
+
+    const taskList = document.getElementById("task-list");
+    const numberEl = document.getElementById("progress-number");
+    const circle = document.getElementById("circle");
+    const circumference = 2 * Math.PI * 80; // r=80
+
+    let progress = 0;
+    let completedTasks = 0;
+
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = circumference;
+
+    function animateProgress(target) {
+        function step() {
+            if (progress < target) {
+                progress++;
+                numberEl.textContent = progress;
+                const offset = circumference - (progress / 100) * circumference;
+                circle.style.strokeDashoffset = offset;
+                setTimeout(step, 50);
+            }
+        }
+        step();
+    }
+
+    function showTasksSequentially(index = 0) {
+        if (index >= tasks.length) return;
+
+        const t = tasks[index];
+        const task = document.createElement("div");
+        task.className = "task";
+        task.innerHTML = `
+            <div class="icon">${t.icon}</div>
+            <div class="content">
+                <h4>${t.title}</h4>
+                <p>${t.desc}</p>
+            </div>
+            <div class="status"><div class="spinner"></div></div>
+        `;
+        taskList.appendChild(task);
+
+        setTimeout(() => task.classList.add("show"), 100);
+
+        setTimeout(() => {
+            task.querySelector(".status").innerHTML = `<span class="check">✔</span>`;
+            completedTasks++;
+            const newTarget = Math.round((completedTasks / tasks.length) * 100);
+            animateProgress(newTarget);
+            showTasksSequentially(index + 1);
+        }, 3000);
+    }
+
+    showTasksSequentially();
+</script>
+
+</body>
+</html>

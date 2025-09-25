@@ -2,82 +2,211 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title th:text="${title}">재난지원금 상세</title>
+    <title>재난지원금 상세</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background:#fff;
+            background:#121212;
+            color:#fff;
             max-width: 420px;
             margin: 0 auto;
             min-height: 100vh;
             font-family: 'Noto Sans KR', sans-serif;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
         header {
+            display:flex; justify-content:space-between; align-items:center;
             padding: 1rem;
-            border-bottom: 1px solid #dee2e6;
-            text-align: center;
-            font-weight: bold;
-            color: #0d6efd;
-            font-size: 1.2rem;
+            border-bottom:1px solid #1e1e1e;
+            background-color: #121212;
+            position: sticky; top: 0; z-index: 1000;
         }
+        .logo { font-size:1.3rem; font-weight:bold; color:#0d6efd; }
+        .user-info { display:flex; align-items:center; }
+        .user-info img {
+            width:32px; height:32px; border-radius:50%; margin-right:8px;
+            border: 1px solid #333;
+        }
+        .user-info span { font-size:0.95rem; font-weight:500; color:#fff; }
+
         .container {
             flex: 1;
-            padding: 1.5rem;
-            border-left: #333333;
-            border-right: #333333;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            align-items:center;
         }
         .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,.05);
+            background:#1e1e1e;
+            border-radius: 0; /* 전체 꽉차게 */
             padding: 1.5rem;
+            box-shadow: none;
+            width:100%;
+            flex: 1;
+            display:flex;
+            flex-direction:column;
+            justify-content: space-between;
         }
         .card h2 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 0.8rem;
-        }
-        .card h6 {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-        }
-        .card p {
-            font-size: 0.95rem;
-            color: #495057;
-            line-height: 1.5;
-        }
-        .btn-primary {
-            margin-top: 1.5rem;
-            font-size: 1rem;
-            padding: 0.75rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            border-radius: 8px;
+            margin-bottom: 1rem;
+            line-height:1.5;
+        }
+        .date-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        .date-btn {
+            flex:1;
+            min-width: 40%;
+            background: #2a2a2a;
+            border:none;
+            border-radius: 10px;
+            padding: 0.8rem;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align:center;
+            cursor:pointer;
+            transition: background 0.2s;
+        }
+        .date-btn:hover { background:#333; }
+        .date-btn.selected { background:#0d6efd; }
+
+        .btn-primary {
+            font-size: 1rem;
+            padding: 0.9rem;
+            font-weight: 600;
+            border-radius: 10px;
+            background:#0d6efd;
+            color:#fff;
+            border:none;
+            width:100%;
+            cursor:pointer;
+            margin-top: 2rem;
+        }
+
+        /* 오버레이 */
+        .overlay {
+            position: fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background: rgba(0,0,0,0.7);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction: column;
+            z-index:9999;
+            color:#fff;
+            font-size:1.1rem;
+            font-weight:600;
+            text-align:center;
+            padding:1.5rem;
+        }
+        .overlay.hidden { display:none; }
+
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            top: -100px; /* 기본은 화면 위로 숨김 */
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0d6efd;
+            color: #fff;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10000;
+            font-size: 0.95rem;
+            text-align: center;
+            text-decoration: none;
+            transition: top 0.4s ease; /* 내려오는 애니메이션 */
+        }
+        .toast.show {
+            top: 20px; /* 내려오기 */
         }
     </style>
 </head>
 <body>
 
-<header>Cellonine</header>
+<header>
+    <div class="logo">Sub One</div>
+    <div class="user-info">
+        <img th:src="${user != null ? user.profile_image_url : '/images/default.png'}" alt="프로필">
+        <span th:text="${user != null ? user.nickname : '사용자'}">사용자</span>
+    </div>
+</header>
 
 <div class="container">
     <div class="card">
-        <h2 th:text="${title}">재난지원금 제목</h2>
-        <h6 th:text="${agency}">기관명</h6>
-        <p th:text="${description}">재난지원금 설명</p>
+        <h2>지자체 담당자 또는 해당 보험사가 방문할 예정이에요.<br>아래 일자 중에 선택해주세요</h2>
 
-        <!-- 원클릭 신청 버튼 -->
-        <form th:action="@{/relief/apply}" method="post">
-            <input type="hidden" name="title" th:value="${title}">
-            <button type="submit" class="btn btn-primary w-100">
-                원클릭 재난지원금 신청하기 🚀
-            </button>
+        <form th:action="@{/relief/confirm-visit}" method="post" id="dateForm">
+            <div class="date-options">
+                <button type="button" class="date-btn" data-date="11일">11일</button>
+                <button type="button" class="date-btn" data-date="14일">14일</button>
+                <button type="button" class="date-btn" data-date="19일">19일</button>
+                <button type="button" class="date-btn" data-date="22일">22일</button>
+            </div>
+            <input type="hidden" name="selectedDate" id="selectedDate">
+            <button type="submit" class="btn-primary">선택한 일정으로 확정하기</button>
         </form>
     </div>
 </div>
+
+<!-- 신청 완료 오버레이 -->
+<div id="overlay" class="overlay hidden">
+    <p>✅ 신청이 완료되었어요</p>
+    <p style="margin-top:0.5rem;">방문 후에 승인신청 나면 알림이 갈거에요</p>
+</div>
+
+<!-- 토스트 알림 -->
+<a id="toast" class="toast" href="/apply">
+    신청이 완료되었어요!<br>
+    원클릭 재난지원금을 신청하세요
+</a>
+
+<script>
+    // 날짜 버튼 토글
+    document.querySelectorAll(".date-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".date-btn").forEach(b => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            document.getElementById("selectedDate").value = btn.dataset.date;
+        });
+    });
+
+    // 제출 이벤트
+    document.getElementById("dateForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const selected = document.getElementById("selectedDate").value;
+        if (!selected) {
+            alert("일정을 선택해주세요.");
+            return;
+        }
+
+        // 오버레이 표시
+        const overlay = document.getElementById("overlay");
+        overlay.classList.remove("hidden");
+
+        // 3초 후 토스트 표시
+        setTimeout(() => {
+            overlay.classList.add("hidden");
+            const toast = document.getElementById("toast");
+            toast.classList.add("show");
+
+            // 3초 후 토스트 사라짐
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }, 3000);
+    });
+</script>
 
 </body>
 </html>

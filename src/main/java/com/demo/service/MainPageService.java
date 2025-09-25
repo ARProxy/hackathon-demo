@@ -40,4 +40,5 @@ public class MainPageService {
         return reliefFundRepository.findByTitle(title)
                 .orElseThrow(() -> new IllegalArgumentException("지원금 정보를 찾을 수 없습니다: " + title));
     }
+
 }
