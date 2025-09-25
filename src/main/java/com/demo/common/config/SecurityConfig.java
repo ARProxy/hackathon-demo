@@ -39,15 +39,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         (authorize) -> {
                             authorize.requestMatchers(
-                                    "/api/auth/renew",
-                                    "/api/**",
-                                    "/**",
+                                    "/",                // index.html
+                                    "/login",           // 로그인 페이지
+                                    "/auth/kakao/**",   // 카카오 로그인 콜백
                                     "/swagger-ui/**",
                                     "/v3/api-docs/**",
                                     "/swagger-resources/**",
-                                    "/webjars/**",
-                                    "/api/auth/**",
-                                    "/api/v1/main/**").permitAll();
+                                    "/webjars/**").permitAll();
                             authorize.anyRequest().authenticated();
                         }
                 )

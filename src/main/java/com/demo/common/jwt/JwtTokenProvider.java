@@ -74,12 +74,21 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
-        String subject = claims.getSubject();
-        User user = new User();
-        Optional<User> memberInfo = userRepository.findById(Long.valueOf(subject));
-        UserDetails userDetails = loadUserDetails(memberInfo.get().getEmail());
-        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        String subject = claims.getSubject(); // userId (Long) 로 저장된 값
+
+        // DB에서 유저 조회 (없으면 null 처리)
+        return userRepository.findById(Long.valueOf(subject))
+                .map(user -> {
+                    UserDetails userDetails = loadUserDetails(user.getEmail());
+                    return new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                })
+                .orElse(null); // 유저가 없으면 null 반환 (JwtFilter에서 체크)
     }
+
 
     private UserDetails loadUserDetails(String subject) {
         userRepository.findByEmail(subject)
