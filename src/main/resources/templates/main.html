@@ -2,32 +2,101 @@
 <!--<html lang="ko" xmlns:th="http://www.thymeleaf.org">-->
 <!--<head>-->
 <!--    <meta charset="UTF-8">-->
-<!--    <title>메인 페이지</title>-->
-<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--    <title>메인 페이지 - 내 지역 재난지원금 찾기</title>-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">-->
 <!--    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">-->
 <!--    <style>-->
-<!--        body { background:#fff; font-family: 'Noto Sans KR', sans-serif; }-->
+<!--        body {-->
+<!--            background-color: #fff;-->
+<!--            max-width: 420px;  /* 앱 뷰 크기 */-->
+<!--            margin: 0 auto;-->
+<!--            min-height: 100vh;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            border: 1px solid #ddd;-->
+<!--            font-family: 'Noto Sans KR', sans-serif;-->
+<!--        }-->
 <!--        header {-->
 <!--            display:flex; justify-content:space-between; align-items:center;-->
-<!--            padding: 1rem; border-bottom:1px solid #ddd;-->
+<!--            padding: 1rem;-->
+<!--            border-bottom:1px solid #dee2e6;-->
+<!--            background-color: #ffffff;-->
+<!--            position: sticky;-->
+<!--            top: 0;-->
+<!--            z-index: 1000;-->
 <!--        }-->
-<!--        .logo { font-size:1.2rem; font-weight:bold; color:#0d6efd; }-->
+<!--        .logo { font-size:1.3rem; font-weight:bold; color:#0d6efd; }-->
 <!--        .user-info { display:flex; align-items:center; }-->
 <!--        .user-info img {-->
 <!--            width:32px; height:32px; border-radius:50%; margin-right:8px;-->
+<!--            border: 1px solid #ddd;-->
 <!--        }-->
+<!--        .user-info span { font-size:0.95rem; font-weight:500; }-->
 <!--        .main-content {-->
-<!--            padding: 2rem 1rem;-->
-<!--            text-align:center;-->
+<!--            flex: 1;-->
+<!--            padding: 1.5rem 1rem;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            justify-content: flex-start;-->
+<!--            align-items: center;-->
+<!--        }-->
+<!--        .search-box {-->
+<!--            width: 100%;-->
+<!--            background: #fff;-->
+<!--            padding: 1.5rem;-->
+<!--            border-radius: 12px;-->
+<!--            box-shadow: 0 2px 8px rgba(0,0,0,.05);-->
+<!--            text-align: center;-->
+<!--        }-->
+<!--        .search-box h2 {-->
+<!--            font-size: 1.2rem;-->
+<!--            margin-bottom: 0.5rem;-->
+<!--            font-weight: 700;-->
+<!--            color: #333;-->
+<!--        }-->
+<!--        .search-box p {-->
+<!--            font-size: 0.9rem;-->
+<!--            margin-bottom: 1rem;-->
+<!--            color: #6c757d;-->
+<!--        }-->
+<!--        .results-container { margin-top: 1.5rem; width:100%; }-->
+<!--        .result-card {-->
+<!--            background: #fff;-->
+<!--            border: 1px solid #e9ecef;-->
+<!--            border-radius: 10px;-->
+<!--            padding: 1rem;-->
+<!--            margin-bottom: 0.8rem;-->
+<!--            text-align: left;-->
+<!--            box-shadow: 0 1px 4px rgba(0,0,0,0.05);-->
+<!--        }-->
+<!--        .result-card h5 {-->
+<!--            font-size: 1rem;-->
+<!--            color: #0d6efd;-->
+<!--            font-weight: 700;-->
+<!--            margin-bottom: 0.5rem;-->
+<!--        }-->
+<!--        .result-card .agency {-->
+<!--            font-size: 0.85rem;-->
+<!--            color: #6c757d;-->
+<!--            margin-bottom: 0.5rem;-->
+<!--        }-->
+<!--        .result-card p {-->
+<!--            font-size: 0.9rem;-->
+<!--            line-height: 1.4;-->
+<!--            color: #495057;-->
+<!--            margin-bottom: 0.8rem;-->
+<!--        }-->
+<!--        .result-card button {-->
+<!--            font-size: 0.85rem;-->
+<!--            padding: 0.4rem 0.8rem;-->
+<!--            border-radius: 6px;-->
 <!--        }-->
 <!--    </style>-->
 <!--</head>-->
 <!--<body>-->
-<!--<header>-->
-<!--    &lt;!&ndash; 왼쪽 로고 &ndash;&gt;-->
-<!--    <div class="logo">Cellonine</div>-->
 
-<!--    &lt;!&ndash; 오른쪽 사용자 프로필 &ndash;&gt;-->
+<!--<header>-->
+<!--    <div class="logo">Cellonine</div>-->
 <!--    <div class="user-info">-->
 <!--        <img th:src="${user.profile_image_url}" alt="프로필">-->
 <!--        <span th:text="${user.nickname}">사용자</span>-->
@@ -35,9 +104,117 @@
 <!--</header>-->
 
 <!--<main class="main-content">-->
-<!--    <h2>5000만 대한민국 국민의 일상을 응원합니다.</h2>-->
-<!--    <p>카카오 로그인 성공 🎉</p>-->
+<!--    <div class="search-box">-->
+<!--        <h2>내 지역 재난지원금 찾기</h2>-->
+<!--        <p>거주지 주소를 입력하고 지원 가능한 재난지원금을 확인하세요.</p>-->
+
+<!--        <div class="input-group mb-3">-->
+<!--            <input type="text" id="address-input" class="form-control" placeholder="먼저 주소 검색 버튼을 클릭하세요" readonly>-->
+<!--            <button class="btn btn-outline-secondary" type="button" id="search-address-btn">주소 검색</button>-->
+<!--        </div>-->
+<!--        <button class="btn btn-primary w-100" id="find-relief-btn">재난지원금 조회하기</button>-->
+<!--    </div>-->
+
+<!--    <div class="results-container mt-4">-->
+<!--        <div id="loading-spinner" class="text-center d-none">-->
+<!--            <div class="spinner-border text-primary" role="status">-->
+<!--                <span class="visually-hidden">Loading...</span>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div id="results-list"></div>-->
+<!--    </div>-->
 <!--</main>-->
+
+<!--<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>-->
+<!--<script>-->
+<!--    // 1. 주소 검색 버튼 클릭 시 다음 주소 API 호출-->
+<!--    document.getElementById('search-address-btn').addEventListener('click', function () {-->
+<!--        new daum.Postcode({-->
+<!--            oncomplete: function(data) {-->
+<!--                document.getElementById('address-input').value = data.address;-->
+<!--            }-->
+<!--        }).open();-->
+<!--    });-->
+
+<!--    // 2. 조회 버튼 클릭 이벤트-->
+<!--    document.getElementById('find-relief-btn').addEventListener('click', function() {-->
+<!--        const address = document.getElementById('address-input').value;-->
+<!--        if (!address) {-->
+<!--            alert('주소를 먼저 검색해주세요.');-->
+<!--            return;-->
+<!--        }-->
+
+<!--        const loadingSpinner = document.getElementById('loading-spinner');-->
+<!--        const resultsList = document.getElementById('results-list');-->
+<!--        loadingSpinner.classList.remove('d-none');-->
+<!--        resultsList.innerHTML = '';-->
+
+<!--        fetchDisasterReliefData(address)-->
+<!--            .then(data => {-->
+<!--                loadingSpinner.classList.add('d-none');-->
+<!--                displayResults(data);-->
+<!--            })-->
+<!--            .catch(error => {-->
+<!--                loadingSpinner.classList.add('d-none');-->
+<!--                resultsList.innerHTML = `<div class="alert alert-danger">데이터를 불러오는 중 오류가 발생했습니다.</div>`;-->
+<!--                console.error(error);-->
+<!--            });-->
+<!--    });-->
+
+<!--    // 3. 샘플 데이터-->
+<!--    function fetchDisasterReliefData(address) {-->
+<!--        return new Promise((resolve) => {-->
+<!--            setTimeout(() => {-->
+<!--                const sampleData = [-->
+<!--                    { title: "긴급재난지원금", agency: "행정안전부", description: "코로나19 위기 극복을 위한 전 국민 대상 지원금입니다." },-->
+<!--                    { title: "소상공인 버팀목자금 플러스", agency: "중소벤처기업부", description: "사회적 거리두기 강화로 경영난을 겪는 소상공인 지원금." },-->
+<!--                    { title: "청년 구직활동지원금", agency: "고용노동부", description: "미취업 청년의 구직활동을 지원하여 취업을 촉진합니다." }-->
+<!--                ];-->
+<!--                if (address.includes('서울')) {-->
+<!--                    sampleData.unshift({-->
+<!--                        title: "[서울시] 서울 희망지원금",-->
+<!--                        agency: "서울특별시청",-->
+<!--                        description: "서울시민 생활 안정을 돕기 위해 서울시가 별도로 지급하는 지원금입니다."-->
+<!--                    });-->
+<!--                }-->
+<!--                resolve(sampleData);-->
+<!--            }, 1000);-->
+<!--        });-->
+<!--    }-->
+
+<!--    // 4. 결과 표시-->
+<!--    function displayResults(data) {-->
+<!--        const resultsList = document.getElementById('results-list');-->
+<!--        resultsList.innerHTML = '';-->
+
+<!--        if (data.length === 0) {-->
+<!--            resultsList.innerHTML = `<div class="alert alert-warning">해당 지역 지원금 정보가 없습니다.</div>`;-->
+<!--            return;-->
+<!--        }-->
+
+<!--        data.forEach(item => {-->
+<!--            const cardHTML = `-->
+<!--                <div class="result-card">-->
+<!--                    <h5>${item.title}</h5>-->
+<!--                    <div class="agency">${item.agency}</div>-->
+<!--                    <p>${item.description}</p>-->
+<!--                    <button class="btn btn-sm btn-primary" onclick="goToDetail('${encodeURIComponent(item.title)}','${encodeURIComponent(item.agency)}','${encodeURIComponent(item.description)}')">-->
+<!--                        상세 보기-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            `;-->
+<!--            resultsList.innerHTML += cardHTML;-->
+<!--        });-->
+<!--    }-->
+
+<!--    // 5. 상세 페이지 이동-->
+<!--    function goToDetail(title, agency, description) {-->
+<!--        const url = `/relief-detail?title=${title}&agency=${agency}&description=${description}`;-->
+<!--        window.location.href = url;-->
+<!--    }-->
+<!--</script>-->
+
 <!--</body>-->
 <!--</html>-->
 <!DOCTYPE html>
@@ -45,88 +222,153 @@
 <head>
     <meta charset="UTF-8">
     <title>메인 페이지 - 내 지역 재난지원금 찾기</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <style>
         body {
-            background-color: #f8f9fa; /* 부드러운 배경색 */
+            background-color: #121212;
+            color: #fff;
+            max-width: 420px;  /* 앱 뷰 크기 */
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             font-family: 'Noto Sans KR', sans-serif;
         }
         header {
             display:flex; justify-content:space-between; align-items:center;
-            padding: 1rem 2rem;
-            border-bottom:1px solid #dee2e6;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,.05);
+            padding: 1rem;
+            border-bottom:1px solid #1e1e1e;
+            background-color: #121212;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        .logo { font-size:1.4rem; font-weight:bold; color:#0d6efd; }
+        .logo { font-size:1.3rem; font-weight:bold; color:#0d6efd; }
         .user-info { display:flex; align-items:center; }
         .user-info img {
-            width:36px; height:36px; border-radius:50%; margin-right:10px;
-            border: 2px solid #eee;
+            width:32px; height:32px; border-radius:50%; margin-right:8px;
+            border: 1px solid #333;
         }
-        .user-info span { font-weight: 500; }
+        .user-info span { font-size:0.95rem; font-weight:500; color:#fff; }
         .main-content {
-            padding: 3rem 1rem;
+            flex: 1;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
         }
         .search-box {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 2rem;
+            width: 100%;
+            background: #1e1e1e;
+            padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,.4);
             text-align: center;
         }
         .search-box h2 {
+            font-size: 1.2rem;
             margin-bottom: 0.5rem;
             font-weight: 700;
-            color: #333;
+            color: #fff;
         }
         .search-box p {
-            margin-bottom: 1.5rem;
-            color: #6c757d;
-        }
-        .results-container {
-            max-width: 700px;
-            margin: 2rem auto 0;
-            text-align: left;
-        }
-        .result-card {
-            background: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 1.5rem;
+            font-size: 0.9rem;
             margin-bottom: 1rem;
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            color: #bbb;
         }
-        .result-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,.1);
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+        .form-control {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 8px;
+            border: none;
+            background: #2a2a2a;
+            color: #fff;
+            font-size: 0.95rem;
+        }
+        .form-control::placeholder { color: #666; }
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            color: #fff;
+            width: 100%;
+        }
+        .btn-outline-secondary {
+            background: #2a2a2a;
+            color: #bbb;
+        }
+        .btn-outline-secondary:hover { background:#333; color:#fff; }
+
+        .results-container { margin-top: 1.5rem; width:100%; }
+        .result-card {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            text-align: left;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
         .result-card h5 {
+            font-size: 1rem;
             color: #0d6efd;
             font-weight: 700;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
         .result-card .agency {
-            font-size: 0.9rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            color: #bbb;
+            margin-bottom: 0.5rem;
         }
         .result-card p {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: #495057;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #ddd;
+            margin-bottom: 0.8rem;
         }
-        .spinner-border {
-            width: 3rem;
-            height: 3rem;
+        .result-card button {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            background: #0d6efd;
+            color: #fff;
+            border: none;
         }
+
+        /* 토스 느낌 로딩 스피너 */
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #0d6efd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 1rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden { display: none !important; }
+        .alert {
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        .alert-warning { background:#333; color:#ffda6a; }
+        .alert-danger { background:#333; color:#ff6b6b; }
     </style>
 </head>
 <body>
@@ -144,22 +386,19 @@
         <h2>내 지역 재난지원금 찾기</h2>
         <p>거주지 주소를 입력하고 지원 가능한 재난지원금을 확인하세요.</p>
 
-        <div class="input-group mb-3">
+        <div class="input-group">
             <input type="text" id="address-input" class="form-control" placeholder="먼저 주소 검색 버튼을 클릭하세요" readonly>
             <button class="btn btn-outline-secondary" type="button" id="search-address-btn">주소 검색</button>
         </div>
-        <button class="btn btn-primary w-100" id="find-relief-btn">재난지원금 조회하기</button>
+        <button class="btn btn-primary" id="find-relief-btn">재난지원금 조회하기</button>
     </div>
 
     <div class="results-container mt-4">
-        <div id="loading-spinner" class="text-center d-none">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-            </div>
+        <div id="loading-spinner" class="text-center hidden">
+            <div class="loader"></div>
         </div>
 
-        <div id="results-list">
-        </div>
+        <div id="results-list"></div>
     </div>
 </main>
 
@@ -169,13 +408,12 @@
     document.getElementById('search-address-btn').addEventListener('click', function () {
         new daum.Postcode({
             oncomplete: function(data) {
-                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
-                document.getElementById('address-input').value = data.address; // 최종 주소값을 입력창에 넣음
+                document.getElementById('address-input').value = data.address;
             }
         }).open();
     });
 
-    // 2. 재난지원금 조회하기 버튼 클릭 이벤트
+    // 2. 조회 버튼 클릭 이벤트
     document.getElementById('find-relief-btn').addEventListener('click', function() {
         const address = document.getElementById('address-input').value;
         if (!address) {
@@ -183,74 +421,51 @@
             return;
         }
 
-        // 로딩 스피너 보이기 및 이전 결과 초기화
         const loadingSpinner = document.getElementById('loading-spinner');
         const resultsList = document.getElementById('results-list');
-        loadingSpinner.classList.remove('d-none');
+        loadingSpinner.classList.remove('hidden');
         resultsList.innerHTML = '';
 
-        // *** 중요 ***
-        // 실제로는 이 부분에서 서버(백엔드)로 address 값을 보내
-        // 공공 API를 호출하고 그 결과를 받아와야 합니다.
-        // 여기서는 시뮬레이션을 위해 가짜 데이터를 사용합니다.
         fetchDisasterReliefData(address)
             .then(data => {
-                loadingSpinner.classList.add('d-none'); // 로딩 스피너 숨기기
-                displayResults(data); // 결과 표시 함수 호출
+                loadingSpinner.classList.add('hidden');
+                displayResults(data);
             })
             .catch(error => {
-                loadingSpinner.classList.add('d-none'); // 에러 시에도 스피너 숨기기
+                loadingSpinner.classList.add('hidden');
                 resultsList.innerHTML = `<div class="alert alert-danger">데이터를 불러오는 중 오류가 발생했습니다.</div>`;
-                console.error('Error fetching data:', error);
+                console.error(error);
             });
     });
 
-    // 3. (시뮬레이션용) 공공 API 데이터 호출 함수
+    // 3. 샘플 데이터
     function fetchDisasterReliefData(address) {
-        console.log(`'${address}' 주소로 재난지원금 데이터를 요청합니다.`);
-
-        // Promise를 사용해 비동기 API 호출을 흉내 냅니다.
         return new Promise((resolve) => {
             setTimeout(() => {
-                // 실제 API 응답과 유사한 형태의 가짜 데이터
                 const sampleData = [
-                    {
-                        title: "긴급재난지원금",
-                        agency: "행정안전부",
-                        description: "코로나19 위기 극복을 위한 전 국민 대상 지원금입니다. 가구 단위로 지급됩니다."
-                    },
-                    {
-                        title: "소상공인 버팀목자금 플러스",
-                        agency: "중소벤처기업부",
-                        description: "사회적 거리두기 강화로 경영난을 겪는 소상공인을 위한 맞춤형 피해 지원 대책입니다."
-                    },
-                    {
-                        title: "청년 구직활동지원금",
-                        agency: "고용노동부",
-                        description: "미취업 청년의 구직활동을 지원하여 취업을 촉진하기 위한 제도입니다."
-                    }
+                    { title: "긴급재난지원금", agency: "행정안전부", description: "코로나19 위기 극복을 위한 전 국민 대상 지원금입니다." },
+                    { title: "소상공인 버팀목자금 플러스", agency: "중소벤처기업부", description: "사회적 거리두기 강화로 경영난을 겪는 소상공인 지원금." },
+                    { title: "청년 구직활동지원금", agency: "고용노동부", description: "미취업 청년의 구직활동을 지원하여 취업을 촉진합니다." }
                 ];
-                // 주소에 '서울'이 포함된 경우 특별 지원금을 추가하는 시나리오
                 if (address.includes('서울')) {
                     sampleData.unshift({
                         title: "[서울시] 서울 희망지원금",
                         agency: "서울특별시청",
-                        description: "서울시민의 생활 안정을 돕기 위해 서울시에서 별도로 지급하는 재난지원금입니다."
+                        description: "서울시민 생활 안정을 돕기 위해 서울시가 별도로 지급하는 지원금입니다."
                     });
                 }
-
                 resolve(sampleData);
-            }, 1500); // 1.5초 지연을 시뮬레이션
+            }, 1000);
         });
     }
 
-    // 4. 받아온 데이터를 화면에 동적으로 표시하는 함수
+    // 4. 결과 표시
     function displayResults(data) {
         const resultsList = document.getElementById('results-list');
-        resultsList.innerHTML = ''; // 기존 내용 초기화
+        resultsList.innerHTML = '';
 
         if (data.length === 0) {
-            resultsList.innerHTML = `<div class="alert alert-warning">해당 지역에 대한 재난지원금 정보가 없습니다.</div>`;
+            resultsList.innerHTML = `<div class="alert alert-warning">해당 지역 지원금 정보가 없습니다.</div>`;
             return;
         }
 
@@ -260,10 +475,19 @@
                     <h5>${item.title}</h5>
                     <div class="agency">${item.agency}</div>
                     <p>${item.description}</p>
+                    <button onclick="goToDetail('${encodeURIComponent(item.title)}','${encodeURIComponent(item.agency)}','${encodeURIComponent(item.description)}')">
+                        상세 보기
+                    </button>
                 </div>
             `;
             resultsList.innerHTML += cardHTML;
         });
+    }
+
+    // 5. 상세 페이지 이동
+    function goToDetail(title, agency, description) {
+        const url = `/relief-detail?title=${title}&agency=${agency}&description=${description}`;
+        window.location.href = url;
     }
 </script>
 
